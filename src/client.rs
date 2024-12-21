@@ -1,4 +1,4 @@
-use embedded_recruitment_task::message::{client_message, ServerMessage};
+use crate::message::{client_message, ServerMessage};
 use log::error;
 use log::info;
 use prost::Message;

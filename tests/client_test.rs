@@ -1,5 +1,6 @@
 use serial_test::serial;
 use embedded_recruitment_task::{
+    client::Client,
     message::{client_message, server_message, AddRequest, EchoMessage},
     server::Server,
 };
@@ -7,8 +8,6 @@ use std::{
     sync::Arc,
     thread::{self, JoinHandle},
 };
-
-mod client;
 
 fn setup_server_thread(server: Arc<Server>) -> JoinHandle<()> {
     thread::spawn(move || {
@@ -28,7 +27,7 @@ fn test_client_connection() {
     let handle = setup_server_thread(server.clone());
 
     // Create and connect the client
-    let mut client = client::Client::new("localhost", 8080, 1000);
+    let mut client = Client::new("localhost", 8080, 1000);
     assert!(client.connect().is_ok(), "Failed to connect to the server");
 
     // Disconnect the client
@@ -53,7 +52,7 @@ fn test_client_echo_message() {
     let handle = setup_server_thread(server.clone());
 
     // Create and connect the client
-    let mut client = client::Client::new("localhost", 8080, 1000);
+    let mut client = Client::new("localhost", 8080, 1000);
     assert!(client.connect().is_ok(), "Failed to connect to the server");
 
     // Prepare the message
@@ -103,7 +102,7 @@ fn test_multiple_echo_messages() {
     let handle = setup_server_thread(server.clone());
 
     // Create and connect the client
-    let mut client = client::Client::new("localhost", 8080, 1000);
+    let mut client = Client::new("localhost", 8080, 1000);
     assert!(client.connect().is_ok(), "Failed to connect to the server");
 
     // Prepare multiple messages
@@ -163,9 +162,9 @@ fn test_multiple_clients() {
 
     // Create and connect multiple clients
     let mut clients = vec![
-        client::Client::new("localhost", 8080, 1000),
-        client::Client::new("localhost", 8080, 1000),
-        client::Client::new("localhost", 8080, 1000),
+        Client::new("localhost", 8080, 1000),
+        Client::new("localhost", 8080, 1000),
+        Client::new("localhost", 8080, 1000),
     ];
 
     for client in clients.iter_mut() {
@@ -235,7 +234,7 @@ fn test_client_add_request() {
     let handle = setup_server_thread(server.clone());
 
     // Create and connect the client
-    let mut client = client::Client::new("localhost", 8080, 1000);
+    let mut client = Client::new("localhost", 8080, 1000);
     assert!(client.connect().is_ok(), "Failed to connect to the server");
 
     // Prepare the message
