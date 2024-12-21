@@ -13,13 +13,13 @@ use std::{
 // TCP/IP Client
 pub struct Client {
     ip: String,
-    port: u32,
+    port: u16,  // Using u16 since TCP ports are 16-bit (0-65535)
     timeout: Duration,
     stream: Option<TcpStream>,
 }
 
 impl Client {
-    pub fn new(ip: &str, port: u32, timeout_ms: u64) -> Self {
+    pub fn new(ip: &str, port: u16, timeout_ms: u64) -> Self {
         Client {
             ip: ip.to_string(),
             port,
