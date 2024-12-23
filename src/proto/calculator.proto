@@ -1,0 +1,49 @@
+// Calculator Service Protocol Definition
+// This file defines a more complex service that demonstrates:
+// 1. Multiple fields in messages
+// 2. Enum usage
+// 3. Error handling through gRPC status codes
+
+syntax = "proto3";
+
+// Define calculator package
+package calculator;
+
+// Calculator service definition
+// Demonstrates handling multiple parameters and error cases
+service CalculatorService {
+    // Performs arithmetic operations
+    // @param CalculateRequest - Contains operands and operation
+    // @returns CalculateResponse - Contains result or error
+    rpc Calculate (CalculateRequest) returns (CalculateResponse);
+}
+
+// Request message containing all necessary calculation parameters
+message CalculateRequest {
+    // First operand for calculation
+    // double type allows for decimal numbers
+    double first_number = 1;
+
+    // Second operand for calculation
+    double second_number = 2;
+
+    // Operation to perform
+    // Using enum type for type-safe operation selection
+    Operation operation = 3;
+}
+
+// Response message with result and error handling
+message CalculateResponse {
+    // Result of the calculation
+    double result = 1;
+}
+
+// Enum defining supported mathematical operations
+// Shows how to use enums in protocol buffers
+enum Operation {
+    // Default value must be 0 in proto3
+    ADD = 0;        // Addition
+    SUBTRACT = 1;   // Subtraction
+    MULTIPLY = 2;   // Multiplication
+    DIVIDE = 3;     // Division (requires special handling for divide by zero)
+}

@@ -1,0 +1,35 @@
+// Echo Service Protocol Definition
+// This file defines the protocol buffer schema for a simple echo service
+// that demonstrates basic gRPC request/response patterns.
+
+// Specify proto3 syntax version - latest stable protocol buffers version
+syntax = "proto3";
+
+// Define the package name to prevent name collisions
+package echo;
+
+// Echo service definition
+// Shows a simple unary RPC pattern (single request -> single response)
+service EchoService {
+    // Echoes back the received message
+    // @param EchoRequest - Contains the message to echo
+    // @returns EchoResponse - Contains the echoed message
+    rpc Echo (EchoRequest) returns (EchoResponse);
+}
+
+// Request message definition
+// Contains the message that should be echoed back
+message EchoRequest {
+    // The message to echo
+    // Field number 1 is used for message encoding
+    // string type indicates UTF-8 encoded text
+    string message = 1;
+}
+
+// Response message definition
+// Contains the echoed message sent back to the client
+message EchoResponse {
+    // The echoed message
+    // Field number matches request for consistency
+    string message = 1;
+}

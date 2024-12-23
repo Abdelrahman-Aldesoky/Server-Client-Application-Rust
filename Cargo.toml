@@ -1,17 +1,30 @@
+# Cargo.toml: Rust package manifest file
+# Defines project metadata, dependencies, and build configuration
+
+# Project metadata section
 [package]
-name = "embedded-recruitment-task"
-version = "0.1.0"
-edition = "2021"
-build = "build.rs"
+name = "embedded-recruitment-task"     # Name of the package
+version = "0.0.1"                     # Current version
+edition = "2021"                      # Rust edition being used
 
+# Main dependencies required at runtime
 [dependencies]
-log = "0.4.2"
-prost = "0.13.4"
-prost-types = "0.13.4"
+# Tokio: Async runtime for Rust
+# Features enabled:
+# - rt-multi-thread: Multi-threaded runtime
+# - sync: Async synchronization primitives
+# - time: Time utilities
+# - macros: Async/await syntax support
+tokio = { version = "1.28", features = ["rt-multi-thread", "sync", "time", "macros"] }
 
+# gRPC implementation dependencies
+tonic = "0.10.2"    # gRPC framework
+prost = "0.12"      # Protocol Buffers implementation
+
+# Dependencies needed during build time
 [build-dependencies]
-prost-build = "0.13.4"
+tonic-build = "0.10.2"    # Compiles .proto files to Rust code
 
+# Dependencies only used for testing
 [dev-dependencies]
-pretty_assertions = "1.4.1"
-serial_test = "3.2.0"
+tokio-test = "0.4"    # Testing utilities for async code
