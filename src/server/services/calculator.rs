@@ -7,6 +7,7 @@
 //! 4. Unit testing async code
 
 use tonic::{Request, Response, Status, Code};
+use tracing::{info, error};
 // Import generated Protocol Buffer code
 // CalculatorService: The trait we need to implement
 // CalculateRequest/Response: The message types for our RPC
@@ -32,6 +33,7 @@ impl CalculatorService for CalculatorServer {
         // Extract the actual request data from the gRPC request wrapper
         let req = request.into_inner();
 
+        info!("Received calculate request: {} {:?} {}", req.first_number, req.operation(), req.second_number);
         // Pattern matching in Rust - a powerful way to handle different cases
         // The '?' operator at the end propagates any Err returned from the match
         let result = match req.operation() {
@@ -43,6 +45,7 @@ impl CalculatorService for CalculatorServer {
                 // Division needs special handling for division by zero
                 // This is a common source of runtime errors that we validate
                 if req.second_number == 0.0 {
+                    error!("Division by zero attempted");
                     Err(Status::new(
                         Code::InvalidArgument,
                         "division by zero is not allowed"
@@ -53,6 +56,7 @@ impl CalculatorService for CalculatorServer {
             }
         }?;  // The ? operator unwraps Ok values and returns Err values
 
+        info!("Sending calculate response: {}", result);
         // Construct and return the successful response
         Ok(Response::new(CalculateResponse {
             result,

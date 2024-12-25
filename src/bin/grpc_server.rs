@@ -14,11 +14,11 @@ async fn main() -> Result<(), Box<dyn std::error::Error>> {
     // Initialize server using builder pattern
     // _shutdown is a channel sender we could use to gracefully shutdown the server
     let (server, _shutdown) = GrpcServer::builder()
-        .address("[::1]:12345")  // IPv6 loopback address and port
+        .address("127.0.0.1:12345")
         .build()?;
         
     // Log server startup information
-    println!("Server listening on [::1]:12345");
+    println!("Server listening on 127.0.0.1:12345");  // Updated log message
     
     // Start the server and await completion or error
     server.serve().await?;

@@ -12,7 +12,7 @@ use embedded_recruitment_task::GrpcClient;
 #[tokio::main]
 async fn main() -> Result<(), Box<dyn std::error::Error>> {
     // Initialize and connect the client to our server
-    let client = GrpcClient::builder("http://[::1]:12345")?
+    let client = GrpcClient::builder("http://127.0.0.1:12345")?
         .connect()?;
 
     // Get service handles for both available services

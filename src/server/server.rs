@@ -8,8 +8,9 @@
 // Import required dependencies
 // tonic: The gRPC framework we're using
 // tokio: For async runtime and utilities
-use tonic::{transport::Server, Status, Code};
+use tonic::{transport::Server, Status, Code, Request};
 use tokio::sync::oneshot;  // Channel for shutdown signal
+use tracing::{info, error};  // Import tracing for logging
 // Import our service implementations
 use crate::proto::echo::echo_service_server::EchoServiceServer;
 use crate::proto::calculator::calculator_service_server::CalculatorServiceServer;
@@ -61,6 +62,12 @@ impl GrpcServerBuilder {
     }
 }
 
+// Define an interceptor function to log incoming connections
+fn log_interceptor(req: Request<()>) -> Result<Request<()>, Status> {
+    info!("Incoming connection from: {:?}", req.remote_addr());
+    Ok(req)
+}
+
 // Main server implementation
 impl GrpcServer {
     // Create a new builder (entry point for server configuration)
@@ -70,26 +77,37 @@ impl GrpcServer {
 
     // Start the server and run until shutdown signal
     pub async fn serve(self) -> Result<(), Status> {
+        // Initialize logging for server
+        crate::logging::init_server()
+            .map_err(|e| Status::internal(format!("Failed to initialize logging: {}", e)))?;
+        
         // Parse the address string into a socket address
         let addr = self.addr.parse()
-            .map_err(|_| Status::new(
-                Code::InvalidArgument,
-                "invalid server address format"
-            ))?;
+            .map_err(|e| {
+                error!("Invalid server address: {}", e);
+                Status::new(Code::InvalidArgument, "invalid server address format")
+            })?;
 
-        // Configure and start the server
+        info!("Starting gRPC server on {}", addr);
+
+        // Create intercepted services
+        let echo_service = EchoServiceServer::with_interceptor(EchoServer::default(), log_interceptor);
+        let calculator_service = CalculatorServiceServer::with_interceptor(CalculatorServer::default(), log_interceptor);
+
+        // Configure and start the server with logging interceptor
         Server::builder()
             // Register our services
-            .add_service(EchoServiceServer::new(EchoServer::default()))
-            .add_service(CalculatorServiceServer::new(CalculatorServer::default()))
+            .add_service(echo_service)
+            .add_service(calculator_service)
             // Start serving with shutdown handler
             .serve_with_shutdown(addr, async { 
                 self.shutdown.await.ok(); 
+                info!("Received shutdown signal, stopping gRPC server");
             })
             .await
-            .map_err(|e| Status::new(
-                Code::Internal,
-                format!("server error: {}", e)
-            ))
+            .map_err(|e| {
+                error!("Server error: {}", e);
+                Status::new(Code::Internal, format!("server error: {}", e))
+            })
     }
 }

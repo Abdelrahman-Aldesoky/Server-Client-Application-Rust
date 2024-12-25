@@ -9,6 +9,7 @@
 pub mod proto;     // Generated Protocol Buffer code
 pub mod client;    // Client-side implementation
 pub mod server;    // Server-side implementation
+pub mod logging;  // logging implementation
 
 // Re-export main types for easier access
 // This allows users to access these types directly from the crate root

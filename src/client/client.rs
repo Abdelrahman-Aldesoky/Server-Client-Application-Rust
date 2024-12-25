@@ -7,6 +7,7 @@
 //! 4. Clean API design with impl AsRef<str>
 
 use tonic::{transport::{Channel, Endpoint}, Status};
+use tracing::{info};
 
 // Builder struct for configuring the client
 // Clone allows us to create copies of the builder
@@ -35,7 +36,13 @@ impl GrpcClientBuilder {
     // Connect and build the final client
     // Uses lazy connection - only connects when first used
     pub fn connect(self) -> Result<GrpcClient, Status> {
+        // Initialize logging for client
+        crate::logging::init_client()
+            .map_err(|e| Status::internal(format!("Failed to initialize logging: {}", e)))?;
+        
+        info!("Connecting to gRPC server at {}", self.endpoint.uri());
         let channel = self.endpoint.connect_lazy();
+        info!("Successfully connected to gRPC server at {}", self.endpoint.uri());
         Ok(GrpcClient { channel })
     }
 }

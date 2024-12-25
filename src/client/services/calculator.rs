@@ -5,6 +5,7 @@
 //! 3. Error handling and status code mapping
 
 use tonic::{Request, Status, Code};
+use tracing::{info, error};
 // Import the generated client and message types
 use crate::proto::calculator::{
     calculator_service_client::CalculatorServiceClient,
@@ -45,6 +46,7 @@ impl CalculatorService {
             ));
         }
 
+        info!("Sending calculate request: {} {:?} {}", first, operation, second);
         // Create and send the gRPC request
         let request = Request::new(CalculateRequest {
             first_number: first,
@@ -54,14 +56,22 @@ impl CalculatorService {
 
         // Handle different types of responses and errors
         match self.client.calculate(request).await {
-            Ok(response) => Ok(response.into_inner().result),
+            Ok(response) => {
+                let result = response.into_inner().result;
+                info!("Received calculate response: {}", result);
+                Ok(result)
+            },
             Err(status) if status.code() == Code::Unavailable => {
+                error!("Service temporarily unavailable");
                 Err(Status::new(
                     Code::Unavailable,
                     "service temporarily unavailable"
                 ))
             }
-            Err(e) => Err(e),
+            Err(e) => {
+                error!("Calculate request failed: {}", e);
+                Err(e)
+            },
         }
     }
 }

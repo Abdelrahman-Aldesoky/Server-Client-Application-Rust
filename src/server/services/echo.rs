@@ -2,6 +2,7 @@
 //! This serves as a good example of basic gRPC service implementation in Rust.
 
 use tonic::{Request, Response, Status, Code};
+use tracing::{info, error};
 // Import the generated protobuf code for our echo service
 use crate::proto::echo::echo_service_server::EchoService;
 use crate::proto::echo::{EchoRequest, EchoResponse};
@@ -26,16 +27,20 @@ impl EchoService for EchoServer {
         // Input validation: Ensure the message isn't empty or just whitespace
         // This is a good practice for robust service implementation
         if req.message.trim().is_empty() {
+            error!("Received empty message");
             return Err(Status::new(
                 Code::InvalidArgument,
                 "empty message is not allowed"
             ));
         }
 
+        info!("Received echo request with message: {}", req.message);
         // Return the same message we received
-        Ok(Response::new(EchoResponse {
+        let response = EchoResponse {
             message: req.message,
-        }))
+        };
+        info!("Sending echo response with message: {}", response.message);
+        Ok(Response::new(response))
     }
 }
 

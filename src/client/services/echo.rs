@@ -5,6 +5,7 @@
 //! 3. Client-side validation
 
 use tonic::{Request, Status, Code};
+use tracing::info;
 use crate::proto::echo::{
     echo_service_client::EchoServiceClient,
     EchoRequest,
@@ -42,10 +43,13 @@ impl EchoService {
             ));
         }
 
+        info!("Sending echo request with message: {}", message);
         // Create and send request
         let request = Request::new(EchoRequest { message });
         let response = self.client.echo(request).await?;
-        Ok(response.into_inner().message)
+        let response_message = response.into_inner().message;
+        info!("Received echo response with message: {}", response_message);
+        Ok(response_message)
     }
 }
 
