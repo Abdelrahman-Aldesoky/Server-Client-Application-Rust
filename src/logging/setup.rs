@@ -1,11 +1,22 @@
+//! Logging Setup
+//! This file provides the setup functions for initializing logging.
+
 use tracing_subscriber::{fmt, EnvFilter};
 use tracing_appender::rolling::{RollingFileAppender, Rotation};
 use super::types::Component;
 use std::sync::{Once, Mutex};
 
+// Ensure logging is initialized only once
 static INIT_LOGGER: Once = Once::new();
 static LOGGER_MUTEX: Mutex<()> = Mutex::new(());
 
+/// Initialize logging for the specified component
+/// 
+/// # Arguments
+/// * `component` - The component for which to initialize logging.
+/// 
+/// # Returns
+/// * `Result<(), Box<dyn std::error::Error>>` - A result indicating success or failure.
 pub(crate) fn init_logging(component: Component) -> Result<(), Box<dyn std::error::Error>> {
     INIT_LOGGER.call_once(|| {
         let _lock = LOGGER_MUTEX.lock().unwrap();

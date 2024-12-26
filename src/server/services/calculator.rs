@@ -26,6 +26,13 @@ pub struct CalculatorServer {}
 // This is needed because Rust's native traits don't support async functions yet
 #[tonic::async_trait]
 impl CalculatorService for CalculatorServer {
+    /// Calculate method that performs basic arithmetic operations
+    /// 
+    /// # Arguments
+    /// * `request` - A gRPC request containing a CalculateRequest message.
+    /// 
+    /// # Returns
+    /// * `Result<Response<CalculateResponse>, Status>` - A result containing the CalculateResponse or an error status.
     async fn calculate(
         &self,
         request: Request<CalculateRequest>,

@@ -24,8 +24,13 @@ pub struct GrpcClient {
 
 // Builder implementation with fluent API
 impl GrpcClientBuilder {
-    // Create a new builder from an address string
-    // AsRef<str> allows flexible string types (String, &str, etc.)
+    /// Create a new builder from an address string
+    /// 
+    /// # Arguments
+    /// * `addr` - A string-like type that represents the server address.
+    /// 
+    /// # Returns
+    /// * `Result<Self, Status>` - A result containing the builder instance or an error status.
     pub fn new(addr: impl AsRef<str>) -> Result<Self, Status> {
         let endpoint = Endpoint::from_shared(addr.as_ref().to_string())
             .map_err(|e| Status::internal(e.to_string()))?;
@@ -33,8 +38,10 @@ impl GrpcClientBuilder {
         Ok(Self { endpoint })
     }
 
-    // Connect and build the final client
-    // Uses lazy connection - only connects when first used
+    /// Connect and build the final client
+    /// 
+    /// # Returns
+    /// * `Result<GrpcClient, Status>` - A result containing the connected client instance or an error status.
     pub fn connect(self) -> Result<GrpcClient, Status> {
         // Initialize logging for client
         crate::logging::init_client()
@@ -49,12 +56,21 @@ impl GrpcClientBuilder {
 
 // Main client implementation
 impl GrpcClient {
-    // Entry point for client configuration
+    /// Entry point for client configuration
+    /// 
+    /// # Arguments
+    /// * `addr` - A string-like type that represents the server address.
+    /// 
+    /// # Returns
+    /// * `Result<GrpcClientBuilder, Status>` - A result containing the builder instance or an error status.
     pub fn builder(addr: impl AsRef<str>) -> Result<GrpcClientBuilder, Status> {
         GrpcClientBuilder::new(addr)
     }
 
-    // Internal method to share the channel with service implementations
+    /// Internal method to share the channel with service implementations
+    /// 
+    /// # Returns
+    /// * `Channel` - The active gRPC channel.
     pub(crate) fn get_channel(&self) -> Channel {
         self.channel.clone()
     }

@@ -25,8 +25,11 @@ mod common;
 // - Basic client-server communication
 #[tokio::test]
 async fn test_echo_simple() {
+    // Setup the test context
     let ctx = TestContext::setup().await.expect("Failed to setup test context");
+    // Define the test message
     let test_msg = "hello";
+    // Send the echo request and wait for the response with a timeout
     let response = timeout(
         Duration::from_secs(5),
         ctx.client.echo().echo(test_msg)
@@ -34,6 +37,7 @@ async fn test_echo_simple() {
         .expect("Test timed out")
         .expect("Echo request failed");
     
+    // Verify that the response matches the test message
     assert_eq!(response, test_msg);
 }
 
@@ -46,8 +50,10 @@ async fn test_echo_simple() {
 // - Unicode escape sequences
 #[tokio::test]
 async fn test_echo_unicode() {
+    // Setup the test context
     let ctx = TestContext::setup().await.expect("Failed to setup test context");
     
+    // Define the test cases with different Unicode messages
     let test_cases = vec![
         ("Emoji Test", "Hello 🌍 🚀 💻"),
         ("RTL Text", "عبدالرحمن"),
@@ -56,7 +62,9 @@ async fn test_echo_unicode() {
         ("Unicode Escapes", "Hello\u{1F600}\u{1F602}"),
     ];
 
+    // Iterate over each test case
     for (name, msg) in test_cases {
+        // Send the echo request and wait for the response with a timeout
         let response = timeout(
             Duration::from_secs(5),
             ctx.client.echo().echo(msg)
@@ -64,6 +72,7 @@ async fn test_echo_unicode() {
             .expect(&format!("{} timed out", name))
             .expect(&format!("{} failed", name));
         
+        // Verify that the response matches the test message
         assert_eq!(response, msg, "{} failed equality check", name);
     }
 }
@@ -77,8 +86,10 @@ async fn test_echo_unicode() {
 // - Structured text (JSON) handling
 #[tokio::test]
 async fn test_echo_formatting() {
+    // Setup the test context
     let ctx = TestContext::setup().await.expect("Failed to setup test context");
     
+    // Define the test cases with different special formatting messages
     let test_cases = vec![
         ("Control Chars", "Hello\nWorld\tTab\rReturn"),
         ("Whitespace", "Hello    World    "),
@@ -87,7 +98,9 @@ async fn test_echo_formatting() {
         ("JSON-like", r#"{"key": "value"}"#),
     ];
 
+    // Iterate over each test case
     for (name, msg) in test_cases {
+        // Send the echo request and wait for the response with a timeout
         let response = timeout(
             Duration::from_secs(5),
             ctx.client.echo().echo(msg)
@@ -95,6 +108,7 @@ async fn test_echo_formatting() {
             .expect(&format!("{} timed out", name))
             .expect(&format!("{} failed", name));
         
+        // Verify that the response matches the test message
         assert_eq!(response, msg, "{} failed equality check", name);
     }
 }
@@ -107,13 +121,17 @@ async fn test_echo_formatting() {
 // - Timeout adequacy for large messages
 #[tokio::test]
 async fn test_echo_long_message() {
+    // Setup the test context
     let ctx = TestContext::setup().await.unwrap();
+    // Define a long test message
     let long_msg = "a".repeat(1000000);
+    // Send the echo request and wait for the response with a timeout
     let response = timeout(
         Duration::from_secs(5),
         ctx.client.echo().echo(long_msg.clone())
     ).await
         .expect("Test timed out")
         .expect("Long message echo failed");
+    // Verify that the response matches the long test message
     assert_eq!(response, long_msg);
 }

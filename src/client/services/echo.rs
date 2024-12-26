@@ -21,7 +21,10 @@ pub struct EchoService {
 
 // Extension method for main client
 impl GrpcClient {
-    // Create new echo service instance
+    /// Create new echo service instance
+    /// 
+    /// # Returns
+    /// * `EchoService` - A new instance of the echo service client.
     pub fn echo(&self) -> EchoService {
         EchoService {
             client: EchoServiceClient::new(self.get_channel())
@@ -31,7 +34,13 @@ impl GrpcClient {
 
 // Main service implementation
 impl EchoService {
-    // Echo method that accepts any string-like input
+    /// Echo method that accepts any string-like input
+    /// 
+    /// # Arguments
+    /// * `message` - A string-like type representing the message to echo.
+    /// 
+    /// # Returns
+    /// * `Result<String, Status>` - A result containing the echoed message or an error status.
     pub async fn echo(&mut self, message: impl Into<String>) -> Result<String, Status> {
         let message = message.into();
         

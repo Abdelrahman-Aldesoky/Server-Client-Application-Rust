@@ -17,6 +17,13 @@ pub struct EchoServer {}
 // The async_trait is needed because Rust doesn't support async functions in traits natively yet
 #[tonic::async_trait]
 impl EchoService for EchoServer {
+    /// Echo method that returns the same message it receives
+    /// 
+    /// # Arguments
+    /// * `request` - A gRPC request containing an EchoRequest message.
+    /// 
+    /// # Returns
+    /// * `Result<Response<EchoResponse>, Status>` - A result containing the EchoResponse or an error status.
     async fn echo(
         &self,
         request: Request<EchoRequest>,

@@ -23,7 +23,10 @@ pub struct CalculatorService {
 
 // Extension trait implementation for GrpcClient
 impl GrpcClient {
-    // Convenient method to create calculator service
+    /// Convenient method to create calculator service
+    /// 
+    /// # Returns
+    /// * `CalculatorService` - A new instance of the calculator service client.
     pub fn calculator(&self) -> CalculatorService {
         // Create new client using the shared channel
         CalculatorService {
@@ -34,8 +37,15 @@ impl GrpcClient {
 
 // Main service implementation
 impl CalculatorService {
-    // High-level calculate method that handles all operations
-    // Takes f64 for numbers and Operation enum for operation type
+    /// High-level calculate method that handles all operations
+    /// 
+    /// # Arguments
+    /// * `first` - The first operand as a floating-point number.
+    /// * `second` - The second operand as a floating-point number.
+    /// * `operation` - The operation to perform as an `Operation` enum.
+    /// 
+    /// # Returns
+    /// * `Result<f64, Status>` - A result containing the calculation result or an error status.
     pub async fn calculate(&mut self, first: f64, second: f64, operation: Operation) -> Result<f64, Status> {
         // Early validation for division by zero
         // Better to fail fast before making network call
