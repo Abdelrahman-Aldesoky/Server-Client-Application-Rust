@@ -25,7 +25,7 @@
 
 ### 1. Introduction
 
-Provide a brief overview of the project, its objectives, and the purpose of the `solution.md` file. This document outlines the identified issues within the original implementation, the fixes applied, and the enhancements made to improve the project's robustness and performance.
+This document outlines the identified issues within the original implementation, the fixes applied, and the enhancements made to improve the project's robustness and performance.
 
 ### 2. Identified Bugs
 
